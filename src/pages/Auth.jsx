@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { auth } from '../services/firebase';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
-import { UserPlus, LogIn } from 'lucide-react';
+import { UserPlus, LogIn, Briefcase } from 'lucide-react';
 
 export default function Auth() {
   const [isLogin, setIsLogin] = useState(true);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
     try {
       if (isLogin) {
         await signInWithEmailAndPassword(auth, email, password);
@@ -19,65 +21,100 @@ export default function Auth() {
         await createUserWithEmailAndPassword(auth, email, password);
       }
     } catch (err) {
-      setError(err.message);
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password') {
+        setError('Email ou mot de passe incorrect.');
+      } else if (err.code === 'auth/email-already-in-use') {
+        setError('Cette adresse email est déjà utilisée.');
+      } else if (err.code === 'auth/weak-password') {
+        setError('Le mot de passe doit faire au moins 6 caractères.');
+      } else {
+        setError('Une erreur est survenue. Veuillez réessayer.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-xl shadow-lg border border-gray-100">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            {isLogin ? 'Connexion' : 'Inscription'}
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Suivez vos candidatures de stage simplement
-          </p>
-        </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          {error && <p className="text-red-500 text-sm text-center bg-red-50 p-2 rounded">{error}</p>}
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div>
-              <input
-                type="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Adresse email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-indigo-50 p-4">
+      <div className="max-w-md w-full bg-white p-8 sm:p-10 rounded-3xl shadow-xl border border-slate-100 relative overflow-hidden">
+        
+        {/* Background Decoration */}
+        <div className="absolute top-0 right-0 -mr-16 -mt-16 w-32 h-32 bg-indigo-50 rounded-full blur-2xl opacity-50 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-32 h-32 bg-blue-50 rounded-full blur-2xl opacity-50 pointer-events-none"></div>
+
+        <div className="relative">
+          <div className="flex justify-center mb-8">
+            <div className="bg-indigo-600 text-white p-3 rounded-2xl shadow-lg shadow-indigo-200">
+              <Briefcase size={32} strokeWidth={2.5} />
             </div>
-            <div>
-              <input
-                type="password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="Mot de passe"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
+          </div>
+          
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+              {isLogin ? 'Bon retour !' : 'Créer un compte'}
+            </h2>
+            <p className="mt-2 text-sm text-slate-500 font-medium">
+              {isLogin ? 'Connectez-vous pour suivre vos candidatures.' : 'Rejoignez-nous pour gérer vos prospections efficacement.'}
+            </p>
           </div>
 
-          <div>
+          <form className="space-y-5" onSubmit={handleSubmit}>
+            {error && (
+              <div className="bg-rose-50 border border-rose-100 text-rose-600 px-4 py-3 rounded-xl text-sm font-medium animate-pulse">
+                {error}
+              </div>
+            )}
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1 ml-1">Email</label>
+                <input
+                  type="email"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50 focus:bg-white transition-all text-slate-900 outline-none"
+                  placeholder="vous@exemple.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-bold text-slate-700 mb-1 ml-1">Mot de passe</label>
+                <input
+                  type="password"
+                  required
+                  className="w-full px-4 py-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-slate-50 focus:bg-white transition-all text-slate-900 outline-none"
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </div>
+            </div>
+
             <button
               type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              disabled={loading}
+              className="w-full flex justify-center items-center py-3 px-4 rounded-xl text-white bg-indigo-600 hover:bg-indigo-700 focus:ring-4 focus:ring-indigo-100 font-bold shadow-sm transition-all disabled:opacity-70"
             >
-              <span className="absolute left-0 inset-y-0 flex items-center pl-3">
-                {isLogin ? <LogIn className="h-5 w-5 text-blue-500 group-hover:text-blue-400" /> : <UserPlus className="h-5 w-5 text-blue-500 group-hover:text-blue-400" />}
-              </span>
-              {isLogin ? 'Se connecter' : "S'inscrire"}
+              {loading ? (
+                <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              ) : (
+                <>
+                  {isLogin ? <LogIn className="w-5 h-5 mr-2" /> : <UserPlus className="w-5 h-5 mr-2" />}
+                  {isLogin ? 'Se connecter' : "S'inscrire"}
+                </>
+              )}
+            </button>
+          </form>
+
+          <div className="mt-8 text-center">
+            <button 
+              onClick={() => { setIsLogin(!isLogin); setError(''); }}
+              className="text-sm font-bold text-slate-500 hover:text-indigo-600 transition-colors"
+            >
+              {isLogin ? "Nouveau ici ? Créer un compte" : "Déjà membre ? Se connecter"}
             </button>
           </div>
-        </form>
-        <div className="text-center mt-4">
-          <button 
-            onClick={() => setIsLogin(!isLogin)}
-            className="text-sm text-blue-600 hover:text-blue-500 font-medium"
-          >
-            {isLogin ? "Pas de compte ? S'inscrire" : "Déjà un compte ? Se connecter"}
-          </button>
         </div>
       </div>
     </div>
