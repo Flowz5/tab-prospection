@@ -92,70 +92,78 @@ export default function Stats({ user }) {
   return (
     <div className="p-4 sm:p-8 max-w-[1400px] mx-auto min-h-screen">
       <div className="mb-8">
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
-          <PieChart className="text-indigo-600" size={36} />
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+          <PieChart className="text-indigo-600 dark:text-indigo-400" size={36} />
           Statistiques
         </h1>
       </div>
 
       {/* Résumé Chiffré */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-10">
-        <div className="bg-indigo-600 text-white rounded-2xl p-6 shadow-md">
-          <p className="text-indigo-100 text-sm font-medium mb-1">Total Candidatures</p>
+        <div className="bg-indigo-600 dark:bg-indigo-700 text-white rounded-2xl p-6 shadow-md">
+          <p className="text-indigo-100 dark:text-indigo-200 text-sm font-medium mb-1">Total Candidatures</p>
           <p className="text-4xl font-bold">{stats.sent}</p>
         </div>
-        <div className="bg-white border border-slate-200 text-slate-800 rounded-2xl p-6 shadow-sm">
-          <p className="text-slate-500 text-sm font-medium mb-1">En pipeline (à cibler)</p>
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-2xl p-6 shadow-sm">
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">En pipeline (à cibler)</p>
           <p className="text-4xl font-bold">{stats.pipeline}</p>
         </div>
-        <div className="bg-white border border-slate-200 text-slate-800 rounded-2xl p-6 shadow-sm">
-          <p className="text-slate-500 text-sm font-medium mb-1">Entretiens décrochés</p>
-          <p className="text-4xl font-bold text-purple-600">{stats.interview}</p>
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-2xl p-6 shadow-sm">
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Entretiens décrochés</p>
+          <p className="text-4xl font-bold text-purple-600 dark:text-purple-400">{stats.interview}</p>
         </div>
-        <div className="bg-white border border-slate-200 text-slate-800 rounded-2xl p-6 shadow-sm">
-          <p className="text-slate-500 text-sm font-medium mb-1">Offres acceptées</p>
-          <p className="text-4xl font-bold text-green-600">{stats.accepted}</p>
+        <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-white rounded-2xl p-6 shadow-sm">
+          <p className="text-slate-500 dark:text-slate-400 text-sm font-medium mb-1">Offres acceptées</p>
+          <p className="text-4xl font-bold text-green-600 dark:text-green-400">{stats.accepted}</p>
         </div>
       </div>
 
       {/* Graphiques Circulaires */}
-      <h2 className="text-xl font-bold text-slate-800 mb-6">Taux de conversion</h2>
+      <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Taux de conversion</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <CircularProgress 
-          percentage={pctSent} 
-          color="text-indigo-500" 
-          label="Envoyées" 
-          sublabel={`${stats.sent} sur ${totalActions} cibles`}
-          icon={TrendingUp}
-        />
-        <CircularProgress 
-          percentage={pctPending} 
-          color="text-amber-500" 
-          label="En attente" 
-          sublabel={`${stats.pending} sans retour`}
-          icon={Clock}
-        />
-        <CircularProgress 
-          percentage={pctInterview} 
-          color="text-purple-500" 
-          label="Entretiens" 
-          sublabel={`${stats.interview} obtenus`}
-          icon={Building2}
-        />
-        <CircularProgress 
-          percentage={pctRefused} 
-          color="text-rose-500" 
-          label="Refus" 
-          sublabel={`${stats.refused} refus`}
-          icon={XCircle}
-        />
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+          <CircularProgress 
+            percentage={pctSent} 
+            color="text-indigo-500 dark:text-indigo-400" 
+            label="Envoyées" 
+            sublabel={`${stats.sent} sur ${totalActions} cibles`}
+            icon={TrendingUp}
+          />
+        </div>
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+          <CircularProgress 
+            percentage={pctPending} 
+            color="text-amber-500 dark:text-amber-400" 
+            label="En attente" 
+            sublabel={`${stats.pending} sans retour`}
+            icon={Clock}
+          />
+        </div>
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+          <CircularProgress 
+            percentage={pctInterview} 
+            color="text-purple-500 dark:text-purple-400" 
+            label="Entretiens" 
+            sublabel={`${stats.interview} obtenus`}
+            icon={Building2}
+          />
+        </div>
+        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
+          <CircularProgress 
+            percentage={pctRefused} 
+            color="text-rose-500 dark:text-rose-400" 
+            label="Refus" 
+            sublabel={`${stats.refused} refus`}
+            icon={XCircle}
+          />
+        </div>
       </div>
       
       {pctAccepted > 0 && (
-        <div className="mt-8 bg-green-50 border border-green-200 rounded-2xl p-6 flex flex-col items-center justify-center">
-           <CheckCircle className="text-green-500 mb-3" size={48} />
-           <h2 className="text-2xl font-bold text-green-800">Acceptés !</h2>
-           <p className="text-green-700 font-medium">{stats.accepted} offre(s) de stage validée(s).</p>
+        <div className="mt-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800/50 rounded-2xl p-6 flex flex-col items-center justify-center">
+           <CheckCircle className="text-green-500 dark:text-green-400 mb-3" size={48} />
+           <h2 className="text-2xl font-bold text-green-800 dark:text-green-300">Acceptés !</h2>
+           <p className="text-green-700 dark:text-green-400 font-medium">{stats.accepted} offre(s) de stage validée(s).</p>
         </div>
       )}
     </div>
