@@ -72,6 +72,7 @@ export default function BonsPlans({ user }) {
         await deleteDoc(doc(db, 'bonsplans', id));
       } catch (error) {
         console.error("Erreur lors de la suppression", error);
+        window.alert("Erreur de suppression (permissions Firebase). Vérifie tes règles Firestore !");
       }
     }
   };
