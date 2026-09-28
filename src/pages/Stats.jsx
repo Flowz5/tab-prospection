@@ -10,7 +10,7 @@ const CircularProgress = ({ percentage, color, label, sublabel, icon: Icon }) =>
   const strokeDashoffset = circumference - (percentage / 100) * circumference;
 
   return (
-    <div className="flex flex-col items-center bg-white p-6 rounded-2xl shadow-sm border border-slate-100">
+    <div className="flex flex-col items-center bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700">
       <div className="relative flex items-center justify-center mb-4">
         {/* Cercle de fond */}
         <svg className="transform -rotate-90 w-40 h-40">
@@ -21,7 +21,7 @@ const CircularProgress = ({ percentage, color, label, sublabel, icon: Icon }) =>
             stroke="currentColor"
             strokeWidth="12"
             fill="transparent"
-            className="text-slate-100"
+            className="text-slate-100 dark:text-slate-700"
           />
           {/* Cercle de progression */}
           <circle
@@ -37,13 +37,13 @@ const CircularProgress = ({ percentage, color, label, sublabel, icon: Icon }) =>
             strokeLinecap="round"
           />
         </svg>
-        <div className="absolute flex flex-col items-center justify-center text-slate-700">
+        <div className="absolute flex flex-col items-center justify-center text-slate-700 dark:text-slate-200">
           <Icon size={24} className={`mb-1 ${color.replace('text-', 'text-').replace('-500', '-600')}`} />
           <span className="text-2xl font-bold">{Math.round(percentage)}%</span>
         </div>
       </div>
-      <h3 className="font-bold text-slate-800 text-center">{label}</h3>
-      <p className="text-sm text-slate-500 text-center mt-1">{sublabel}</p>
+      <h3 className="font-bold text-slate-800 dark:text-white text-center">{label}</h3>
+      <p className="text-sm text-slate-500 dark:text-slate-400 text-center mt-1">{sublabel}</p>
     </div>
   );
 };
@@ -121,42 +121,34 @@ export default function Stats({ user }) {
       {/* Graphiques Circulaires */}
       <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Taux de conversion</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <CircularProgress 
-            percentage={pctSent} 
-            color="text-indigo-500 dark:text-indigo-400" 
-            label="Envoyées" 
-            sublabel={`${stats.sent} sur ${totalActions} cibles`}
-            icon={TrendingUp}
-          />
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <CircularProgress 
-            percentage={pctPending} 
-            color="text-amber-500 dark:text-amber-400" 
-            label="En attente" 
-            sublabel={`${stats.pending} sans retour`}
-            icon={Clock}
-          />
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <CircularProgress 
-            percentage={pctInterview} 
-            color="text-purple-500 dark:text-purple-400" 
-            label="Entretiens" 
-            sublabel={`${stats.interview} obtenus`}
-            icon={Building2}
-          />
-        </div>
-        <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-          <CircularProgress 
-            percentage={pctRefused} 
-            color="text-rose-500 dark:text-rose-400" 
-            label="Refus" 
-            sublabel={`${stats.refused} refus`}
-            icon={XCircle}
-          />
-        </div>
+        <CircularProgress 
+          percentage={pctSent} 
+          color="text-indigo-500 dark:text-indigo-400" 
+          label="Envoyées" 
+          sublabel={`${stats.sent} sur ${totalActions} cibles`}
+          icon={TrendingUp}
+        />
+        <CircularProgress 
+          percentage={pctPending} 
+          color="text-amber-500 dark:text-amber-400" 
+          label="En attente" 
+          sublabel={`${stats.pending} sans retour`}
+          icon={Clock}
+        />
+        <CircularProgress 
+          percentage={pctInterview} 
+          color="text-purple-500 dark:text-purple-400" 
+          label="Entretiens" 
+          sublabel={`${stats.interview} obtenus`}
+          icon={Building2}
+        />
+        <CircularProgress 
+          percentage={pctRefused} 
+          color="text-rose-500 dark:text-rose-400" 
+          label="Refus" 
+          sublabel={`${stats.refused} refus`}
+          icon={XCircle}
+        />
       </div>
       
       {pctAccepted > 0 && (
