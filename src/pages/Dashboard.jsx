@@ -3,8 +3,8 @@ import { db } from '../services/firebase';
 import { collection, query, where, onSnapshot, addDoc, updateDoc, deleteDoc, doc } from 'firebase/firestore';
 import { differenceInDays, parseISO } from 'date-fns';
 import { Plus, Edit2, Trash2, AlertCircle, Building2, MapPin, Calendar, Clock, Contact2, HelpCircle, Download, FileText, Link as LinkIcon, Search, Filter, Tag } from 'lucide-react';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 export default function Dashboard({ user }) {
   const [applications, setApplications] = useState([]);
@@ -208,7 +208,7 @@ export default function Dashboard({ user }) {
       tableRows.push([app.entreprise, app.localisation, app.statut, app.dateEnvoi, derniere]);
     });
 
-    doc.autoTable({
+    autoTable(doc, {
       head: [tableColumn],
       body: tableRows,
       startY: 20,
