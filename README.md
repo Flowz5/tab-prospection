@@ -66,6 +66,3 @@ StageTrack is a lightweight, modern, and collaborative web app built to help stu
 ## 🚢 Deployment (Vercel)
 
 The app is optimized for Vercel deployment. It includes a `vercel.json` file that handles Single Page Application (SPA) routing, so refreshing on specific routes (like `/bons-plans`) won't trigger a 404 error.
-
----
-*Built with ❤️ for students struggling to find internships.*
