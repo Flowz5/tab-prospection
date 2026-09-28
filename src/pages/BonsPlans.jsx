@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { db } from '../services/firebase';
-import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp } from 'firebase/firestore';
-import { Users, Search, Building2, MapPin, Users as UsersIcon, Plus, AlertCircle, FileText } from 'lucide-react';
+import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, doc, deleteDoc } from 'firebase/firestore';
+import { Users, Search, Building2, MapPin, Users as UsersIcon, Plus, AlertCircle, FileText, Trash2 } from 'lucide-react';
 
 export default function BonsPlans({ user }) {
   const [messages, setMessages] = useState([]);
@@ -62,6 +62,17 @@ export default function BonsPlans({ user }) {
       setIsFormOpen(false);
     } catch (error) {
       console.error("Erreur lors de l'ajout", error);
+    }
+  };
+
+  // delete a post if you're the owner
+  const handleDelete = async (id) => {
+    if (window.confirm('Voulez-vous vraiment supprimer ce bon plan ?')) {
+      try {
+        await deleteDoc(doc(db, 'bonsplans', id));
+      } catch (error) {
+        console.error("Erreur lors de la suppression", error);
+      }
     }
   };
 
@@ -172,14 +183,25 @@ export default function BonsPlans({ user }) {
 
               {/* Content section */}
               <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-bold text-slate-700 dark:text-slate-300 text-sm">
-                    {msg.userId === user.uid ? 'Moi' : msg.userEmail?.split('@')[0]}
-                  </span>
-                  <span className="text-slate-300 dark:text-slate-600">•</span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">
-                    Membre
-                  </span>
+                <div className="flex items-center justify-between mb-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-bold text-slate-700 dark:text-slate-300 text-sm">
+                      {msg.userId === user.uid ? 'Moi' : msg.userEmail?.split('@')[0]}
+                    </span>
+                    <span className="text-slate-300 dark:text-slate-600">•</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-2 py-0.5 rounded-md">
+                      Membre
+                    </span>
+                  </div>
+                  {msg.userId === user.uid && (
+                    <button 
+                      onClick={() => handleDelete(msg.id)}
+                      className="text-slate-400 hover:text-rose-500 transition-colors p-1"
+                      title="Supprimer"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  )}
                 </div>
 
                 {isOldMessage ? (
