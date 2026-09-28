@@ -21,13 +21,15 @@ export default function Dashboard({ user }) {
   });
   const [isEditing, setIsEditing] = useState(null);
 
+  // fetch all apps from firebase and listen to real-time updates
   useEffect(() => {
     if (!user) return;
     const q = query(collection(db, 'applications'), where('userId', '==', user.uid));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const data = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setApplications(data.filter(app => app.type === 'candidature').sort((a,b) => new Date(b.dateEnvoi) - new Date(a.dateEnvoi)));
-      // Trier les "À contacter" par ville
+      
+      // group the "to contact" folks by city
       const aContacter = data.filter(app => app.type === 'acontacter')
                              .sort((a, b) => a.localisation.localeCompare(b.localisation));
       setToContact(aContacter);
@@ -35,6 +37,7 @@ export default function Dashboard({ user }) {
     return () => unsubscribe();
   }, [user]);
 
+  // save the form data (handles both new and edits)
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -60,7 +63,7 @@ export default function Dashboard({ user }) {
   }
 
   const handleDelete = async (id) => {
-    if (window.confirm("Êtes-vous sûr de vouloir supprimer cette entrée ?")) {
+    if (window.confirm("Tu veux vraiment tej ça ?")) {
       await deleteDoc(doc(db, 'applications', id));
     }
   };
@@ -81,10 +84,11 @@ export default function Dashboard({ user }) {
     setIsFormOpen(true);
   };
 
+  // check if we forgot to follow up (limit is 10 days bro)
   const isLate = (dateEnvoi, relance, relance2, relance3, statut) => {
     if (!dateEnvoi || statut === 'Refusé' || statut === 'Accepté') return false;
     
-    // On cherche la dernière date d'interaction
+    // figure out the last time we talked to them
     let lastDate = dateEnvoi;
     if (relance3) lastDate = relance3;
     else if (relance2) lastDate = relance2;
@@ -110,7 +114,6 @@ export default function Dashboard({ user }) {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
         <div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">Tableau de bord</h1>
-          <p className="text-slate-500 mt-1">Suivez et relancez vos opportunités de stage efficacement.</p>
         </div>
         <button 
           onClick={() => { resetForm(); setIsFormOpen(!isFormOpen); }}
@@ -295,7 +298,7 @@ export default function Dashboard({ user }) {
       {/* Section À Contacter */}
       <div>
         <h2 className="text-2xl font-bold mb-6 text-slate-800 flex items-center gap-3">
-          Pipeline de Prospection <span className="bg-amber-100 text-amber-700 text-sm py-1 px-3 rounded-full">{toContact.length}</span>
+          À Contacter <span className="bg-amber-100 text-amber-700 text-sm py-1 px-3 rounded-full">{toContact.length}</span>
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {toContact.map(app => (
@@ -310,7 +313,7 @@ export default function Dashboard({ user }) {
               <div className="mt-6 flex justify-between items-center border-t border-slate-100 pt-4">
                 <button 
                   onClick={() => {
-                    // Transformer en candidature
+                    // convert to sent application
                     setFormData({...app, type: 'candidature', dateEnvoi: new Date().toISOString().split('T')[0]});
                     setIsEditing(app.id);
                     setIsFormOpen(true);
@@ -328,8 +331,7 @@ export default function Dashboard({ user }) {
           ))}
           {toContact.length === 0 && (
              <div className="col-span-full bg-white border border-dashed border-slate-300 rounded-2xl p-8 text-center">
-               <p className="text-slate-500 font-medium">Votre pipeline est vide.</p>
-               <p className="text-sm text-slate-400 mt-1">Ajoutez des entreprises à cibler via le bouton "Nouvelle opportunité".</p>
+               <p className="text-slate-500 font-medium">Rien à contacter pour l'instant.</p>
              </div>
           )}
         </div>

@@ -7,6 +7,7 @@ export default function BonsPlans({ user }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
 
+  // fetch all messages, order by newest
   useEffect(() => {
     const q = query(collection(db, 'bonsplans'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -16,6 +17,7 @@ export default function BonsPlans({ user }) {
     return () => unsubscribe();
   }, []);
 
+  // send a new message to the squad
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
@@ -36,7 +38,7 @@ export default function BonsPlans({ user }) {
     <div className="p-6 max-w-4xl mx-auto">
       <div className="flex items-center gap-3 mb-8">
         <Users className="h-8 w-8 text-blue-600" />
-        <h1 className="text-3xl font-bold text-gray-900">Espace Collaboratif (Bons Plans)</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Bons Plans</h1>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden flex flex-col h-[600px]">
@@ -57,7 +59,7 @@ export default function BonsPlans({ user }) {
               )}
             </div>
           ))}
-          {messages.length === 0 && <p className="text-center text-gray-500 mt-10">Soyez le premier à partager un bon plan !</p>}
+          {messages.length === 0 && <p className="text-center text-gray-500 mt-10">Rien à afficher pour le moment.</p>}
         </div>
 
         {/* Input */}

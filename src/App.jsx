@@ -127,6 +127,7 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  // listen to auth state changes so we know who is logged in
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -141,6 +142,7 @@ export default function App() {
     </div>
   );
 
+  // if the dude isn't logged in, block him and show the auth screen
   if (!user) {
     return <Auth />;
   }

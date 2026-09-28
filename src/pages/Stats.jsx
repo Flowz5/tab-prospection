@@ -58,6 +58,7 @@ export default function Stats({ user }) {
     accepted: 0
   });
 
+  // grab all apps and split them up by status
   useEffect(() => {
     if (!user) return;
     const q = query(collection(db, 'applications'), where('userId', '==', user.uid));
@@ -79,6 +80,7 @@ export default function Stats({ user }) {
     return () => unsubscribe();
   }, [user]);
 
+  // basic math to get the %
   const totalActions = stats.sent + stats.pipeline;
   const pctSent = totalActions > 0 ? (stats.sent / totalActions) * 100 : 0;
   
@@ -92,9 +94,8 @@ export default function Stats({ user }) {
       <div className="mb-8">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight flex items-center gap-3">
           <PieChart className="text-indigo-600" size={36} />
-          Statistiques & Performances
+          Statistiques
         </h1>
-        <p className="text-slate-500 mt-2">Analysez vos taux de conversion pour ajuster votre prospection.</p>
       </div>
 
       {/* Résumé Chiffré */}
@@ -123,29 +124,29 @@ export default function Stats({ user }) {
         <CircularProgress 
           percentage={pctSent} 
           color="text-indigo-500" 
-          label="Passage à l'action" 
-          sublabel={`${stats.sent} envoyées sur ${totalActions} cibles`}
+          label="Envoyées" 
+          sublabel={`${stats.sent} sur ${totalActions} cibles`}
           icon={TrendingUp}
         />
         <CircularProgress 
           percentage={pctPending} 
           color="text-amber-500" 
-          label="En attente de réponse" 
-          sublabel={`${stats.pending} candidatures sans retour`}
+          label="En attente" 
+          sublabel={`${stats.pending} sans retour`}
           icon={Clock}
         />
         <CircularProgress 
           percentage={pctInterview} 
           color="text-purple-500" 
-          label="Taux d'entretiens" 
-          sublabel={`${stats.interview} entretiens obtenus`}
+          label="Entretiens" 
+          sublabel={`${stats.interview} obtenus`}
           icon={Building2}
         />
         <CircularProgress 
           percentage={pctRefused} 
           color="text-rose-500" 
-          label="Taux de refus" 
-          sublabel={`${stats.refused} refus essuyés`}
+          label="Refus" 
+          sublabel={`${stats.refused} refus`}
           icon={XCircle}
         />
       </div>
@@ -153,8 +154,8 @@ export default function Stats({ user }) {
       {pctAccepted > 0 && (
         <div className="mt-8 bg-green-50 border border-green-200 rounded-2xl p-6 flex flex-col items-center justify-center">
            <CheckCircle className="text-green-500 mb-3" size={48} />
-           <h2 className="text-2xl font-bold text-green-800">Félicitations !</h2>
-           <p className="text-green-700 font-medium">Vous avez {stats.accepted} offre(s) de stage acceptée(s).</p>
+           <h2 className="text-2xl font-bold text-green-800">Acceptés !</h2>
+           <p className="text-green-700 font-medium">{stats.accepted} offre(s) de stage validée(s).</p>
         </div>
       )}
     </div>

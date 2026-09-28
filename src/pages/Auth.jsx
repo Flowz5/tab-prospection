@@ -10,6 +10,7 @@ export default function Auth() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // handle the login/signup stuff with firebase auth
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
@@ -21,6 +22,7 @@ export default function Auth() {
         await createUserWithEmailAndPassword(auth, email, password);
       }
     } catch (err) {
+      // spit out some readable errors instead of the ugly firebase ones
       if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password') {
         setError('Email ou mot de passe incorrect.');
       } else if (err.code === 'auth/email-already-in-use') {
@@ -52,13 +54,11 @@ export default function Auth() {
           
           <div className="text-center mb-8">
             <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              {isLogin ? 'Bon retour !' : 'Créer un compte'}
+              {isLogin ? 'Connexion' : 'Inscription'}
             </h2>
-            <p className="mt-2 text-sm text-slate-500 font-medium">
-              {isLogin ? 'Connectez-vous pour suivre vos candidatures.' : 'Rejoignez-nous pour gérer vos prospections efficacement.'}
-            </p>
           </div>
 
+          {/* form submission */}
           <form className="space-y-5" onSubmit={handleSubmit}>
             {error && (
               <div className="bg-rose-50 border border-rose-100 text-rose-600 px-4 py-3 rounded-xl text-sm font-medium animate-pulse">
@@ -108,11 +108,12 @@ export default function Auth() {
           </form>
 
           <div className="mt-8 text-center">
+            {/* toggle login/signup mode */}
             <button 
               onClick={() => { setIsLogin(!isLogin); setError(''); }}
               className="text-sm font-bold text-slate-500 hover:text-indigo-600 transition-colors"
             >
-              {isLogin ? "Nouveau ici ? Créer un compte" : "Déjà membre ? Se connecter"}
+              {isLogin ? "Pas de compte ? S'inscrire" : "Déjà un compte ? Se connecter"}
             </button>
           </div>
         </div>
