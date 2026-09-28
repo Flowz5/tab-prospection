@@ -462,7 +462,7 @@ export default function Dashboard({ user }) {
                         {derniereRelance}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                        <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="flex justify-end gap-2 transition-opacity">
                           {app.notes && (
                             <button 
                               onClick={() => window.alert(`Notes pour ${app.entreprise} :\n\n${app.notes}`)} 
@@ -536,7 +536,7 @@ export default function Dashboard({ user }) {
                 >
                   Postuler
                 </button>
-                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="flex gap-1 transition-opacity">
                   {app.notes && (
                     <button 
                       onClick={() => window.alert(`Notes pour ${app.entreprise} :\n\n${app.notes}`)}
