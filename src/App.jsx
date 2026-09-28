@@ -1,13 +1,129 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, Navigate, useLocation } from 'react-router-dom';
 import { auth } from './services/firebase';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
 import Auth from './pages/Auth';
 import Dashboard from './pages/Dashboard';
 import BonsPlans from './pages/BonsPlans';
-import { LayoutDashboard, Users, LogOut } from 'lucide-react';
+import Stats from './pages/Stats';
+import { LayoutDashboard, Users, LogOut, PieChart, Menu, X, UserCircle2 } from 'lucide-react';
 
-function App() {
+function AppContent({ user }) {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+
+  const navLinks = [
+    { path: '/', name: 'Tableau de bord', icon: LayoutDashboard },
+    { path: '/stats', name: 'Statistiques', icon: PieChart },
+    { path: '/bons-plans', name: 'Bons Plans', icon: Users },
+  ];
+
+  return (
+    <div className="flex h-screen bg-slate-100 overflow-hidden font-sans text-slate-900">
+      {/* Sidebar Desktop */}
+      <aside className="hidden md:flex flex-col w-64 bg-indigo-700 shadow-xl transition-all z-20">
+        <div className="p-6 flex items-center gap-3">
+          <div className="bg-white/20 p-2 rounded-lg">
+            <LayoutDashboard className="w-6 h-6 text-white" />
+          </div>
+          <span className="text-2xl font-extrabold text-white tracking-wide">StageTrack</span>
+        </div>
+
+        <nav className="flex-1 px-4 mt-6 space-y-2">
+          {navLinks.map((link) => {
+            const isActive = location.pathname === link.path;
+            const Icon = link.icon;
+            return (
+              <Link
+                key={link.path}
+                to={link.path}
+                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors font-medium ${
+                  isActive 
+                    ? 'bg-indigo-800 text-white shadow-inner' 
+                    : 'text-indigo-200 hover:bg-indigo-600/50 hover:text-white'
+                }`}
+              >
+                <Icon size={20} />
+                {link.name}
+              </Link>
+            );
+          })}
+        </nav>
+
+        <div className="p-4 border-t border-indigo-600/50">
+          <div className="flex items-center gap-3 px-4 py-3 bg-indigo-800/50 rounded-xl mb-4">
+            <UserCircle2 className="w-8 h-8 text-indigo-200" />
+            <div className="overflow-hidden">
+              <p className="text-sm font-medium text-white truncate">{user.email}</p>
+            </div>
+          </div>
+          <button
+            onClick={() => signOut(auth)}
+            className="flex w-full items-center justify-center gap-2 px-4 py-3 text-sm font-bold text-indigo-100 bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-colors"
+          >
+            <LogOut size={18} />
+            Déconnexion
+          </button>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <div className="flex-1 flex flex-col h-screen overflow-hidden relative">
+        {/* Mobile Top Bar */}
+        <div className="md:hidden bg-indigo-700 flex items-center justify-between p-4 shadow-md z-30">
+          <span className="text-xl font-bold text-white">StageTrack</span>
+          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-white p-1">
+            {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+
+        {/* Mobile Menu Dropdown */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden absolute top-[60px] left-0 right-0 bg-indigo-700 shadow-xl z-20 border-t border-indigo-600">
+            <nav className="px-4 pt-2 pb-4 space-y-1">
+              {navLinks.map((link) => {
+                const isActive = location.pathname === link.path;
+                const Icon = link.icon;
+                return (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-colors font-medium ${
+                      isActive ? 'bg-indigo-800 text-white' : 'text-indigo-200 hover:bg-indigo-600'
+                    }`}
+                  >
+                    <Icon size={20} />
+                    {link.name}
+                  </Link>
+                );
+              })}
+              <button
+                onClick={() => signOut(auth)}
+                className="flex w-full items-center gap-3 px-4 py-3 mt-4 text-sm font-bold text-indigo-200 hover:text-white hover:bg-indigo-600 rounded-lg"
+              >
+                <LogOut size={20} />
+                Déconnexion
+              </button>
+            </nav>
+          </div>
+        )}
+
+        {/* Page Content */}
+        <main className="flex-1 overflow-y-auto bg-slate-50/50">
+          <Routes>
+            <Route path="/" element={<Dashboard user={user} />} />
+            <Route path="/stats" element={<Stats user={user} />} />
+            <Route path="/bons-plans" element={<BonsPlans user={user} />} />
+            <Route path="*" element={<Navigate to="/" />} />
+          </Routes>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -19,7 +135,11 @@ function App() {
     return () => unsubscribe();
   }, []);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Chargement...</div>;
+  if (loading) return (
+    <div className="min-h-screen flex items-center justify-center bg-slate-50">
+      <div className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+    </div>
+  );
 
   if (!user) {
     return <Auth />;
@@ -27,56 +147,7 @@ function App() {
 
   return (
     <Router>
-      <div className="min-h-screen bg-gray-50 flex flex-col">
-        {/* Navbar */}
-        <nav className="bg-white shadow-sm border-b border-gray-200">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex justify-between h-16">
-              <div className="flex">
-                <div className="flex-shrink-0 flex items-center">
-                  <span className="text-xl font-bold text-blue-600">StageTrack</span>
-                </div>
-                <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                  <Link to="/" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                    <LayoutDashboard className="w-4 h-4 mr-2" />
-                    Tableau de bord
-                  </Link>
-                  <Link to="/bons-plans" className="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
-                    <Users className="w-4 h-4 mr-2" />
-                    Bons Plans
-                  </Link>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <span className="text-sm text-gray-500 mr-4 hidden sm:block">{user.email}</span>
-                <button
-                  onClick={() => signOut(auth)}
-                  className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition"
-                >
-                  <LogOut className="w-5 h-5" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </nav>
-
-        {/* Navigation Mobile */}
-        <div className="sm:hidden border-b border-gray-200 bg-white p-2 flex justify-around">
-           <Link to="/" className="text-gray-600 flex items-center text-sm p-2"><LayoutDashboard className="w-4 h-4 mr-1"/> Dashboard</Link>
-           <Link to="/bons-plans" className="text-gray-600 flex items-center text-sm p-2"><Users className="w-4 h-4 mr-1"/> Bons Plans</Link>
-        </div>
-
-        {/* Main Content */}
-        <main className="flex-1 w-full">
-          <Routes>
-            <Route path="/" element={<Dashboard user={user} />} />
-            <Route path="/bons-plans" element={<BonsPlans user={user} />} />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </main>
-      </div>
+      <AppContent user={user} />
     </Router>
   );
 }
-
-export default App;
