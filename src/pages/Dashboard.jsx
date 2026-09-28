@@ -464,7 +464,11 @@ export default function Dashboard({ user }) {
                       <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                         <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                           {app.notes && (
-                            <button className="p-2 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg" title={app.notes}>
+                            <button 
+                              onClick={() => window.alert(`Notes pour ${app.entreprise} :\n\n${app.notes}`)} 
+                              className="p-2 text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/20 rounded-lg transition-colors" 
+                              title="Voir les notes"
+                            >
                               <FileText size={18} />
                             </button>
                           )}
@@ -534,7 +538,13 @@ export default function Dashboard({ user }) {
                 </button>
                 <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                   {app.notes && (
-                    <button className="text-slate-400 hover:text-amber-500 p-1.5" title={app.notes}><FileText size={16} /></button>
+                    <button 
+                      onClick={() => window.alert(`Notes pour ${app.entreprise} :\n\n${app.notes}`)}
+                      className="text-slate-400 hover:text-amber-500 p-1.5 transition-colors" 
+                      title="Voir les notes"
+                    >
+                      <FileText size={16} />
+                    </button>
                   )}
                   <button onClick={() => editApp(app)} className="text-slate-400 hover:text-indigo-500 p-1.5"><Edit2 size={16} /></button>
                   <button onClick={() => handleDelete(app.id)} className="text-slate-400 hover:text-rose-500 p-1.5"><Trash2 size={16} /></button>
